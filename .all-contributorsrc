@@ -207,6 +207,79 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "thatrobotdev",
+      "name": "James Kerrane",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/18013689?v=4",
+      "profile": "http://thatrobot.dev",
+      "contributions": [
+        "doc",
+        "bug"
+      ]
+    },
+    {
+      "login": "dmpinder",
+      "name": "Darren Pinder",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/4732147?v=4",
+      "profile": "https://vatu.co.uk",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "zvikarp",
+      "name": "zvikarp",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/13397207?v=4",
+      "profile": "http://zektec.com",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "wowkanwowka",
+      "name": "wowkanwowka",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/16153753?v=4",
+      "profile": "https://github.com/wowkanwowka",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "JohannesBe",
+      "name": "JohannesBe",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/21303311?v=4",
+      "profile": "https://github.com/JohannesBe",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "TxsAdamWest",
+      "name": "Adan Huerta",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/16004559?v=4",
+      "profile": "http://txsadamwest.github.io/portfolio",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "paulz1",
+      "name": "paulz1",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/6814620?v=4",
+      "profile": "https://github.com/paulz1",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "saqibameen",
+      "name": "Saqib Ameen",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/31374163?v=4",
+      "profile": "https://saqib.dev",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
