@@ -124,6 +124,7 @@ To spin up a local environment, you will need Docker. Do the steps below and you
 - Fork this repo: https://github.com/dailydotdev/apps
 - Pull it locally
 - Run `docker compose up`
+- Apply all migrations by running `docker compose exec daily-api node ./node_modules/typeorm/cli.js migration:run -d src/data-source.js`
 - Once done, seed your local data by running `docker compose exec daily-api node ./bin/import`
 - Then lastly, run `npm run dev:oss`
 - The app should run at `http://localhost:5002/`
