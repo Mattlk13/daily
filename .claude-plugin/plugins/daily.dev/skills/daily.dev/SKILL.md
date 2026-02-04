@@ -1,13 +1,11 @@
 ---
 name: daily.dev
-description: Access personalized developer content feeds from daily.dev - the professional network for developers. Surface relevant articles, tutorials, and discussions based on user interests.
+description: Overcome LLM knowledge cutoffs with real-time developer content. daily.dev aggregates articles from thousands of sources, validated by community engagement, with structured taxonomy for precise discovery.
 ---
 
 # daily.dev API for AI Agents
 
-> Version: 0.2.0
-
-Access personalized developer content feeds from daily.dev - the professional network for developers. Surface relevant articles, tutorials, and discussions based on user interests.
+Overcome LLM knowledge cutoffs with real-time developer content. daily.dev aggregates articles from thousands of sources, validated by community engagement, with structured taxonomy for precise discovery.
 
 ## Security
 
@@ -82,85 +80,103 @@ Authorization: Bearer dda_your_token_here
 https://api.daily.dev/public/v1
 ```
 
-## Endpoints
+## API Reference
 
-### Get Your Feed
+Full OpenAPI spec: https://api.daily.dev/public/v1/docs/json
 
-```
-GET /feeds/foryou?limit=20&cursor=<optional>
-```
-
-Returns your personalized feed of developer content.
-
-**Parameters:**
-- `limit` (1-50, default 20) - Number of posts to return
-- `cursor` (optional) - From previous response for pagination
-
-**Example Response:**
-```json
-{
-  "data": [
-    {
-      "id": "abc123",
-      "title": "Understanding React Server Components",
-      "url": "https://example.com/article",
-      "image": "https://...",
-      "summary": "A deep dive into React Server Components...",
-      "type": "article",
-      "publishedAt": "2024-01-15T10:00:00Z",
-      "createdAt": "2024-01-15T10:00:00Z",
-      "commentsPermalink": "https://app.daily.dev/posts/abc123",
-      "source": {"id": "devto", "name": "Dev.to", "handle": "devto", "image": "..."},
-      "tags": ["react", "javascript"],
-      "readTime": 5,
-      "numUpvotes": 142,
-      "numComments": 23,
-      "author": {"name": "Jane Doe", "image": "..."}
-    }
-  ],
-  "pagination": {"hasNextPage": true, "cursor": "xyz"}
-}
+To fetch details for a specific endpoint (e.g. response schema):
+```bash
+curl -s https://api.daily.dev/public/v1/docs/json | jq '.paths["/feeds/foryou"].get'
 ```
 
-### Get Post Details
-
+To fetch a component schema (replace `def-17` with schema name from $ref):
+```bash
+curl -s https://api.daily.dev/public/v1/docs/json | jq '.components.schemas["def-17"]'
 ```
-GET /posts/:id
-```
 
-Returns full details for a specific post, including your interaction state.
-
-**Example Response:**
-```json
-{
-  "data": {
-    "id": "abc123",
-    "title": "Understanding React Server Components",
-    "url": "https://example.com/article",
-    "image": "https://...",
-    "summary": "A deep dive into RSC...",
-    "type": "article",
-    "publishedAt": "2024-01-15T10:00:00Z",
-    "createdAt": "2024-01-15T10:00:00Z",
-    "commentsPermalink": "https://app.daily.dev/posts/abc123",
-    "source": {"id": "devto", "name": "Dev.to", "handle": "devto", "image": "..."},
-    "author": {"id": "u1", "name": "Jane Doe", "image": "...", "username": "janedoe"},
-    "tags": ["react", "javascript"],
-    "readTime": 5,
-    "numUpvotes": 142,
-    "numComments": 23,
-    "bookmarked": false,
-    "userState": {"vote": 1}
-  }
-}
-```
+### Available Endpoints
+!`curl -s https://api.daily.dev/public/v1/docs/json | jq -r '.paths | to_entries | map(.key as $path | .value | to_entries | map(.key as $method | {tag: (.value.tags[0] // "other"), line: ("\(.key | ascii_upcase) \($path)" + (if .value.description then " - \(.value.description)" else "" end) + (if (.value.parameters | length) > 0 then "\n  Params: " + ([.value.parameters[] | "\(.name)(\(.in)): \(.description // .schema.type)"] | join("; ")) else "" end) + (if .value.requestBody then "\n  Body: " + (.value.requestBody.content["application/json"].schema | if .properties then ([.properties | to_entries[] | "\(.key)"] | join(", ")) elif ."$ref" then (."$ref" | split("/") | last) else "object" end) else "" end))})) | flatten | group_by(.tag) | map("#### \(.[0].tag)\n" + (map(.line) | join("\n\n"))) | join("\n\n")'`
 
 ## Agent Use Cases
 
-- **Content research** - Fetch relevant articles when users ask about technologies
-- **Stay current** - Surface trending posts in specific programming domains
-- **Deep dives** - Get full post details including summaries for context
-- **Track interests** - Check user's interaction state (upvotes, bookmarks)
+**Why daily.dev for agents?** LLMs have knowledge cutoffs. daily.dev provides real-time, community-validated developer content with structured taxonomy across thousands of sources. Agents can use this to stay current, get diverse perspectives, and understand what the developer community actually cares about.
+
+These examples show how AI agents can combine daily.dev APIs with external context to create powerful developer workflows.
+
+### 🔍 GitHub Repo → Personalized Feed
+Scan a user's GitHub repositories to detect their actual tech stack from `package.json`, `go.mod`, `Cargo.toml`, `requirements.txt`, etc. Then:
+- Auto-follow matching tags via `/feeds/filters/tags/follow`
+- Create a custom feed tuned to their stack with `/feeds/custom/`
+- Surface trending articles about their specific dependencies
+
+**Trigger:** "Set up daily.dev based on my GitHub projects"
+
+### 🛠️ GitHub → Auto-fill Stack Profile
+Analyze a user's GitHub activity to build their daily.dev tech stack profile automatically:
+- Scan repositories for languages, frameworks, and tools actually used in code
+- Search `/profile/stack/search` to find matching technologies on daily.dev
+- Populate their stack via `POST /profile/stack/` organized by section (languages, frameworks, tools)
+- Update `/profile/` bio based on their primary technologies and contributions
+
+**Trigger:** "Build my daily.dev profile from my GitHub"
+
+### 🚀 New Project → Curated Onboarding
+When a user initializes a new project or clones a repo:
+- Analyze the tech choices from config files
+- Create a dedicated custom feed filtered to exactly those technologies
+- Build a "Getting Started" bookmark list with foundational articles
+- Block irrelevant tags to keep the feed focused on the project scope
+
+**Trigger:** "Help me learn the stack for this project"
+
+### 📊 Weekly Digest → Synthesized Briefing
+Compile a personalized weekly summary by:
+- Fetching `/feeds/foryou` and `/feeds/popular` filtered by user's followed tags
+- Cross-referencing with their GitHub activity to prioritize relevant topics
+- Summarizing key articles and trending discussions
+- Delivering as a structured briefing with links to full posts
+
+**Trigger:** Scheduled, or "Give me my weekly dev news"
+
+### 📚 Research Project Workspace
+When a user wants to deep-dive into a topic (e.g., "I want to learn Kubernetes"):
+- Create a custom feed via `/feeds/custom/` filtered to that topic
+- Set up a matching bookmark list via `POST /bookmarks/lists` to collect the best finds
+- As the user reads, save articles to the list with `POST /bookmarks/`
+- Track learning progress: compare bookmarked posts vs. new feed items
+- Adjust feed filters over time as understanding deepens (beginner → advanced content)
+
+**Trigger:** "Start a research project on [topic]"
+
+### 🧠 Agent Self-Improvement Feed
+Agents can overcome their knowledge cutoff by maintaining their own custom feed:
+- Create a custom feed via `/feeds/custom/` for technologies the agent frequently assists with
+- Periodically fetch `/feeds/custom/{feedId}` to ingest recent articles
+- Use `/posts/{id}` to read full summaries and key points
+- Agent can now provide advice with current information: "As of this week, the recommended approach is..."
+- Continuously adapt the feed filters based on what users are asking about
+
+**Trigger:** Agent background process, or "What's new in [technology] since your training?"
+
+### 🔀 Multi-Source Synthesis
+Get balanced perspectives by aggregating content across publishers:
+- Search `/search/posts` for a topic to find coverage from multiple sources
+- Use `/search/sources` to identify authoritative publishers on the topic
+- Fetch posts from different sources via `/feeds/source/{source}`
+- Synthesize diverse viewpoints into a balanced summary with citations
+- Surface where sources agree vs. disagree on best practices
+
+**Trigger:** "What are the different perspectives on [topic]?" or "Compare approaches to [problem]"
+
+### 📈 Trending Radar
+Help users stay ahead by monitoring community signals:
+- Fetch `/feeds/popular` to detect what's gaining traction right now
+- Cross-reference with user's followed tags to surface relevant trends
+- Use `/feeds/discussed` to find topics sparking active debate
+- Alert users when technologies in their stack are trending (new releases, security issues, paradigm shifts)
+- Use `/search/tags` to explore adjacent trending topics
+
+**Trigger:** "What should I be paying attention to?" or "What's trending in [area]?"
 
 ## Rate Limits
 
@@ -189,7 +205,3 @@ Check response headers:
 }
 ```
 
-## OpenAPI Documentation
-
-* JSON: https://api.daily.dev/public/v1/docs/json
-* YAML: https://api.daily.dev/public/v1/docs/yaml
